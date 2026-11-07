@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rompho Digital Dashboard</title>
+  
+  <!-- Google Fonts: TH Sarabun -->
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sarabun: ['Sarabun', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons (CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body { font-family: 'Sarabun', sans-serif; background-color: #F7F7F4; }
+    .bg-stripes {
+      background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px);
+    }
+  </style>
+</head>
+<body class="text-[#15253A] pb-12 min-h-screen">
+
+  <!-- Hero Section -->
+  <section class="bg-[#69B7DF] pt-12 pb-16 px-6 relative border-b-8 border-[#15253A]">
+    <div class="max-w-4xl mx-auto text-center relative z-10">
+      <div class="inline-block bg-[#F7F7F4] px-4 py-1 rounded-sm shadow-sm mb-6 -rotate-2 border border-gray-200 relative">
+        <span class="text-sm font-bold tracking-wide uppercase">Rompho Digital Dashboard</span>
+        <div class="absolute -top-2 -left-2 w-6 h-3 bg-yellow-100 opacity-80 rotate-12"></div>
+        <div class="absolute -bottom-2 -right-2 w-6 h-3 bg-yellow-100 opacity-80 -rotate-12"></div>
+      </div>
+      
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <i data-lucide="camera" class="w-9 h-9 text-[#15253A]"></i>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight">ระบบจัดการสต็อกกรอบรูป</h1>
+      </div>
+      <p class="text-lg md:text-xl text-[#15253A]/80 max-w-2xl mx-auto leading-relaxed">
+        จัดการจำนวนสินค้า เพิ่มกรอบรูปใหม่ และตรวจสอบสินค้าคงคลังได้ในหน้าเดียว
+      </p>
+    </div>
+    <div class="absolute bottom-0 left-0 w-full h-4 bg-stripes opacity-20"></div>
+  </section>
+
+  <!-- Stats & Form Section -->
+  <section class="max-w-5xl mx-auto -mt-6 px-6 relative z-20">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+        <div class="bg-blue-100 p-3 rounded-full"><i data-lucide="package" class="w-6 h-6 text-blue-600"></i></div>
+        <div>
+          <p class="text-sm text-gray-500 font-semibold">สินค้าทั้งหมด</p>
+          <p class="text-2xl font-bold"><span id="total-items">0</span> รายการ</p>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+        <div class="bg-green-100 p-3 rounded-full"><i data-lucide="trending-up" class="w-6 h-6 text-green-600"></i></div>
+        <div>
+          <p class="text-sm text-gray-500 font-semibold">มูลค่ารวมโดยประมาณ</p>
+          <p class="text-2xl font-bold">฿<span id="total-value">0</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Set -->
+    <div class="bg-[#F8C843] rounded-3xl p-8 shadow-sm border-2 border-[#15253A] relative">
+      <div id="form-badge" class="absolute -top-4 left-8 bg-[#F7F7F4] px-3 py-1 rounded-sm text-xs font-bold border border-gray-300 shadow-sm -rotate-2">
+        📝 เพิ่มสินค้าใหม่
+      </div>
+      
+      <form id="frameForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-2">
+        <div class="col-span-1 md:col-span-2 lg:col-span-1">
+          <label class="block text-sm font-bold mb-1">ชื่อกรอบรูป</label>
+          <input required type="text" id="name" class="w-full p-3 rounded-xl border-2 border-[#15253A] bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20" placeholder="เช่น กรอบหลุยส์" />
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1">ขนาด</label>
+          <input required type="text" id="size" class="w-full p-3 rounded-xl border-2 border-[#15253A] bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20" placeholder="เช่น 4x6 นิ้ว" />
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1">สี</label>
+          <input required type="text" id="color" class="w-full p-3 rounded-xl border-2 border-[#15253A] bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20" placeholder="เช่น ขาว" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-sm font-bold mb-1">จำนวน</label>
+            <input required type="number" min="0" id="quantity" class="w-full p-3 rounded-xl border-2 border-[#15253A] bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20" value="0" />
+          </div>
+          <div>
+            <label class="block text-sm font-bold mb-1">ราคา</label>
+            <input required type="number" min="0" id="price" class="w-full p-3 rounded-xl border-2 border-[#15253A] bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20" value="0" />
+          </div>
+        </div>
+        <div class="flex items-end gap-2">
+          <button type="submit" id="submitBtn" class="flex-1 bg-[#15253A] text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#2A3F5A] transition-colors">
+            <i data-lucide="plus" class="w-4 h-4"></i> เพิ่ม
+          </button>
+          <button type="button" id="cancelBtn" onclick="resetForm()" class="hidden bg-white p-3 rounded-xl border-2 border-[#15253A] hover:bg-gray-50">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Inventory List -->
+  <section class="max-w-5xl mx-auto px-6 mt-16">
+    <h2 class="text-3xl font-bold mb-6">รายการสินค้าคงคลัง</h2>
+    <div class="bg-white rounded-3xl border-2 border-[#15253A] overflow-hidden shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-[#69B7DF]/20 border-b-2 border-[#15253A]">
+              <th class="p-4 font-bold">ชื่อกรอบรูป</th>
+              <th class="p-4 font-bold">ขนาด</th>
+              <th class="p-4 font-bold">สี</th>
+              <th class="p-4 font-bold text-center">จำนวน (ชิ้น)</th>
+              <th class="p-4 font-bold">ราคา (บาท)</th>
+              <th class="p-4 font-bold text-center">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- ข้อมูลจะถูกโหลดมาใส่ที่นี่ด้วย JavaScript -->
+            <tr>
+              <td colspan="6" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    const API_URL = 'http://localhost:5000/api/frames';
+    let items = [];
+    let isEditing = false;
+    let editId = null;
+
+    // Elements
+    const form = document.getElementById('frameForm');
+    const tableBody = document.getElementById('table-body');
+    const totalItemsEl = document.getElementById('total-items');
+    const totalValueEl = document.getElementById('total-value');
+    const submitBtn = document.getElementById('submitBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const formBadge = document.getElementById('form-badge');
+
+    // โหลดข้อมูลเริ่มต้น
+    fetchFrames();
+
+    async function fetchFrames() {
+      try {
+        const response = await fetch(API_URL);
+        items = await response.json();
+        renderTable();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500">ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาตรวจสอบ Backend (พอร์ต 5000)</td></tr>`;
+      }
+    }
+
+    function renderTable() {
+      // อัปเดตสถิติ
+      totalItemsEl.innerText = items.length;
+      const totalValue = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+      totalValueEl.innerText = totalValue.toLocaleString();
+
+      // วาดตาราง
+      if (items.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500">ยังไม่มีข้อมูลสินค้า</td></tr>`;
+        return;
+      }
+
+      tableBody.innerHTML = items.map(item => `
+        <tr class="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+          <td class="p-4 font-semibold">${item.name}</td>
+          <td class="p-4">${item.size}</td>
+          <td class="p-4"><span class="inline-block px-2 py-1 bg-gray-100 rounded-md text-sm">${item.color}</span></td>
+          <td class="p-4">
+            <div class="flex items-center justify-center gap-3">
+              <button onclick="updateQuantity(${item.id}, -1)" class="w-8 h-8 rounded-full bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 font-bold">-</button>
+              <span class="w-8 text-center font-bold text-lg">${item.quantity}</span>
+              <button onclick="updateQuantity(${item.id}, 1)" class="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 font-bold">+</button>
+            </div>
+          </td>
+          <td class="p-4 font-medium">฿${Number(item.price).toLocaleString()}</td>
+          <td class="p-4">
+            <div class="flex items-center justify-center gap-2">
+              <button onclick='editItem(${JSON.stringify(item)})' class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                <i data-lucide="edit-2" class="w-4 h-4"></i>
+              </button>
+              <button onclick="deleteItem(${item.id})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+      
+      // เรียกโหลดไอคอนอีกครั้งหลังจากวาดตารางใหม่
+      lucide.createIcons();
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        name: document.getElementById('name').value,
+        size: document.getElementById('size').value,
+        color: document.getElementById('color').value,
+        quantity: parseInt(document.getElementById('quantity').value),
+        price: parseFloat(document.getElementById('price').value)
+      };
+
+      try {
+        if (isEditing) {
+          await fetch(`${API_URL}/${editId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+          });
+        } else {
+          await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+          });
+        }
+        resetForm();
+        fetchFrames();
+      } catch (error) {
+        console.error('Error saving data:', error);
+      }
+    });
+
+    function editItem(item) {
+      isEditing = true;
+      editId = item.id;
+      
+      document.getElementById('name').value = item.name;
+      document.getElementById('size').value = item.size;
+      document.getElementById('color').value = item.color;
+      document.getElementById('quantity').value = item.quantity;
+      document.getElementById('price').value = item.price;
+
+      // เปลี่ยน UI
+      formBadge.innerText = '📝 แก้ไขข้อมูล';
+      submitBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> บันทึก';
+      cancelBtn.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function resetForm() {
+      isEditing = false;
+      editId = null;
+      form.reset();
+      
+      // คืนค่า UI
+      formBadge.innerText = '📝 เพิ่มสินค้าใหม่';
+      submitBtn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> เพิ่ม';
+      cancelBtn.classList.add('hidden');
+      lucide.createIcons();
+    }
+
+    async function deleteItem(id) {
+      if (confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')) {
+        try {
+          await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+          fetchFrames();
+        } catch (error) {
+          console.error('Error deleting data:', error);
+        }
+      }
+    }
+
+    async function updateQuantity(id, change) {
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+
+      const newQuantity = item.quantity + change;
+      if (newQuantity < 0) return;
+
+      try {
+        await fetch(`${API_URL}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...item, quantity: newQuantity })
+        });
+        fetchFrames();
+      } catch (error) {
+        console.error('Error updating quantity:', error);
+      }
+    }
+  </script>
+</body>
+</html>
