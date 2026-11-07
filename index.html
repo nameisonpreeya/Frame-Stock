@@ -142,10 +142,16 @@
   </section>
 
   <script>
-    // Initialize Lucide icons
-    lucide.createIcons();
+    const SUPABASE_URL = 'postgresql://postgres.tumyefrsnpdszkiohqsi:onpeeya5355@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres'; // เช่น https://xyz.supabase.co
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1bXllZnJzbnBkc3praW9ocXNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwNjEzNTIsImV4cCI6MjEwOTYzNzM1Mn0.z2Tu0Atk9wcB9bZwPD2mHgq323G_JRB_n50FyC47HYk';
 
-    const API_URL = 'https://frame-stock-p5hp.onrender.com';
+    const headers = {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    };
+
     let items = [];
     let isEditing = false;
     let editId = null;
@@ -159,27 +165,24 @@
     const cancelBtn = document.getElementById('cancelBtn');
     const formBadge = document.getElementById('form-badge');
 
-    // โหลดข้อมูลเริ่มต้น
     fetchFrames();
 
     async function fetchFrames() {
       try {
-        const response = await fetch(API_URL);
-        items = await response.json();
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/frames?select=*&order=id.asc`, { headers });
+        items = await res.json();
         renderTable();
       } catch (error) {
         console.error('Error fetching data:', error);
-        tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500">ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาตรวจสอบ Backend (พอร์ต 5000)</td></tr>`;
       }
     }
 
+    // วาดตาราง (ใช้ฟังก์ชัน renderTable เดิมของคุณได้เลย)
     function renderTable() {
-      // อัปเดตสถิติ
       totalItemsEl.innerText = items.length;
       const totalValue = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
       totalValueEl.innerText = totalValue.toLocaleString();
 
-      // วาดตาราง
       if (items.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500">ยังไม่มีข้อมูลสินค้า</td></tr>`;
         return;
@@ -210,14 +213,11 @@
           </td>
         </tr>
       `).join('');
-      
-      // เรียกโหลดไอคอนอีกครั้งหลังจากวาดตารางใหม่
       lucide.createIcons();
     }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
       const formData = {
         name: document.getElementById('name').value,
         size: document.getElementById('size').value,
@@ -228,15 +228,15 @@
 
       try {
         if (isEditing) {
-          await fetch(`${API_URL}/${editId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+          await fetch(`${SUPABASE_URL}/rest/v1/frames?id=eq.${editId}`, {
+            method: 'PATCH',
+            headers,
             body: JSON.stringify(formData)
           });
         } else {
-          await fetch(API_URL, {
+          await fetch(`${SUPABASE_URL}/rest/v1/frames`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body: JSON.stringify(formData)
           });
         }
@@ -250,14 +250,11 @@
     function editItem(item) {
       isEditing = true;
       editId = item.id;
-      
       document.getElementById('name').value = item.name;
       document.getElementById('size').value = item.size;
       document.getElementById('color').value = item.color;
       document.getElementById('quantity').value = item.quantity;
       document.getElementById('price').value = item.price;
-
-      // เปลี่ยน UI
       formBadge.innerText = '📝 แก้ไขข้อมูล';
       submitBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> บันทึก';
       cancelBtn.classList.remove('hidden');
@@ -268,8 +265,6 @@
       isEditing = false;
       editId = null;
       form.reset();
-      
-      // คืนค่า UI
       formBadge.innerText = '📝 เพิ่มสินค้าใหม่';
       submitBtn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> เพิ่ม';
       cancelBtn.classList.add('hidden');
@@ -278,32 +273,20 @@
 
     async function deleteItem(id) {
       if (confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')) {
-        try {
-          await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-          fetchFrames();
-        } catch (error) {
-          console.error('Error deleting data:', error);
-        }
+        await fetch(`${SUPABASE_URL}/rest/v1/frames?id=eq.${id}`, { method: 'DELETE', headers });
+        fetchFrames();
       }
     }
 
     async function updateQuantity(id, change) {
       const item = items.find(i => i.id === id);
-      if (!item) return;
-
-      const newQuantity = item.quantity + change;
-      if (newQuantity < 0) return;
-
-      try {
-        await fetch(`${API_URL}/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...item, quantity: newQuantity })
-        });
-        fetchFrames();
-      } catch (error) {
-        console.error('Error updating quantity:', error);
-      }
+      if (!item || (item.quantity + change) < 0) return;
+      await fetch(`${SUPABASE_URL}/rest/v1/frames?id=eq.${id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ quantity: item.quantity + change })
+      });
+      fetchFrames();
     }
   </script>
 </body>
